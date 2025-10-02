@@ -2,6 +2,32 @@ import numpy as np
 import pandas as pd
 import sys
 import argparse
+# import subprocess
+import paramiko, os
+from paramiko.proxy import ProxyCommand
+from contextlib import contextmanager
+
+@contextmanager
+def ssh_connect(host_alias):
+    cfg = paramiko.SSHConfig()
+    with open(os.path.expanduser("~/.ssh/config")) as f:
+        cfg.parse(f)
+    host_cfg = cfg.lookup(host_alias)
+
+    proxy = ProxyCommand(host_cfg['proxycommand']) if 'proxycommand' in host_cfg else None
+
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(
+        hostname=host_cfg['hostname'],
+        username=host_cfg.get('user'),
+        key_filename=os.path.expanduser(host_cfg.get('identityfile', [None])[0]),
+        sock=proxy
+    )
+    try:
+        yield client
+    finally:
+        client.close()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("csv_file_path")
@@ -33,6 +59,14 @@ bottom_df = df.iloc[split_idx + 1:]  # skip blank line
 bottom_df = bottom_df[bottom_df.iloc[:, 0] != '']
 bench_info = dict(zip(bottom_df.iloc[:, 0], bottom_df.iloc[:, 1]))
 
+# Extract doubles
+time_per_tet = float(bench_info['approx time per tet (s)'])
+max_ram_per_tet = float(bench_info['approx max ram per tet (KB)'])
+# Evaluate the numpy expression string safely
+# Define an "eval" environment with numpy available
+safe_env = {"np": np}
+numtets = eval(bench_info['total numtets'], safe_env)
+
 if verbose:
     # === Example outputs ===
     print("=== Versions ===")
@@ -56,4 +90,13 @@ if verbose:
                 print(" " * (max_key_len + 3) + cont.rjust(len(cont)))
         else:
             print(f"{k.ljust(max_key_len)} : {v_str}")
+    print("\ntime_per_tet:", time_per_tet, type(time_per_tet))
+    print("max_ram_per_tet:", max_ram_per_tet, type(max_ram_per_tet))
+    print("numtets:", numtets, type(numtets))
 
+if machine != "local":
+    with ssh_connect(machine+"python") as ssh:
+        stdin, stdout, stderr = ssh.exec_command("top -b -n 1 | head -n 15")
+        print(f"\n=========================== top processes on {machine} ===========================")
+        print(stdout.read().decode(), end="")
+        print("===============================================================================\n")
