@@ -4,7 +4,7 @@ feature/geomfactors-refactor,ted/feature/geomfactors-refactor,first_nektar++/bui
 master no-equispaced,REUSE,master_nektar++/build,,~/${build_loc}/dist/bin/FieldConvert cube_tet_${s}.xml cube_tet_${3}.vtu --no-equispaced -f -v
 feature/geomfactors-refactor no-equispaced,REUSE,first_nektar++/build,,~/${build_loc}/dist/bin/FieldConvert cube_tet_${s}.xml cube_tet_${3}.vtu --no-equispaced -f -v
 ,,,,
-approx time per tet (s),1e-5,,,
+approx time per tet (s),1e-4,,,
 approx max ram per tet (KB),20,,,
 total numtets,"np.linspace(10, 4e4, 7)",,,
 prep command,cp cube_tet_template.geo cube_tet_$s.geo && sed -i s/size_var/$s/g cube_tet_$s.geo && gmsh -3 cube_tet_$s.geo >/dev/null && rm cube_tet_$s.geo && ~/master_nektar++/build/dist/bin/NekMesh cube_tet_$s.msh cube_tet_$s.xml -f && rm cube_tet_$s.msh,,,

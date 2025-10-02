@@ -2,32 +2,51 @@ import numpy as np
 import pandas as pd
 import sys
 import argparse
-# import subprocess
+import subprocess
 import paramiko, os
 from paramiko.proxy import ProxyCommand
 from contextlib import contextmanager
 
 @contextmanager
 def ssh_connect(host_alias):
-    cfg = paramiko.SSHConfig()
-    with open(os.path.expanduser("~/.ssh/config")) as f:
-        cfg.parse(f)
-    host_cfg = cfg.lookup(host_alias)
+    if host_alias=="local":
+        try:
+            yield None
+        finally:
+            pass
+    else:
+        cfg = paramiko.SSHConfig()
+        with open(os.path.expanduser("~/.ssh/config")) as f:
+            cfg.parse(f)
+        host_cfg = cfg.lookup(host_alias+"python")
 
-    proxy = ProxyCommand(host_cfg['proxycommand']) if 'proxycommand' in host_cfg else None
+        proxy = ProxyCommand(host_cfg['proxycommand']) if 'proxycommand' in host_cfg else None
 
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(
-        hostname=host_cfg['hostname'],
-        username=host_cfg.get('user'),
-        key_filename=os.path.expanduser(host_cfg.get('identityfile', [None])[0]),
-        sock=proxy
-    )
-    try:
-        yield client
-    finally:
-        client.close()
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(
+            hostname=host_cfg['hostname'],
+            username=host_cfg.get('user'),
+            key_filename=os.path.expanduser(host_cfg.get('identityfile', [None])[0]),
+            sock=proxy
+        )
+        try:
+            yield client
+        finally:
+            print("CLOSING SSH CONNECTION")
+            client.close()
+
+def human_format(num, sig=2):
+    """Convert a number to human-readable format with 2 significant figures and K/M/B suffixes."""
+    num = float(num)
+    if num >= 1e9:
+        return f"{f'{num/1e9:.{sig}g}'}B"
+    elif num >= 1e6:
+        return f"{f'{num/1e6:.{sig}g}'}M"
+    elif num >= 1e3:
+        return f"{f'{num/1e3:.{sig}g}'}K"
+    else:
+        return f"{f'{num:.{sig}g}'}"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("csv_file_path")
@@ -94,9 +113,17 @@ if verbose:
     print("max_ram_per_tet:", max_ram_per_tet, type(max_ram_per_tet))
     print("numtets:", numtets, type(numtets))
 
-if machine != "local":
-    with ssh_connect(machine+"python") as ssh:
-        stdin, stdout, stderr = ssh.exec_command("top -b -n 1 | head -n 15")
-        print(f"\n=========================== top processes on {machine} ===========================")
+with ssh_connect(machine) as ssh:
+    command = "top -b -n 1 | head -n 15"
+    print(f"\n=========================== top processes on {machine} ===========================")
+    if machine == "local":
+        print(subprocess.run(command, shell=True, capture_output=True, text=True).stdout, end="")
+    else:
+        stdin, stdout, stderr = ssh.exec_command(command)
         print(stdout.read().decode(), end="")
-        print("===============================================================================\n")
+    print("===============================================================================\n")
+
+print(f"Numbers of tets:   {[human_format(n) for n in numtets]}")
+print(f"Total number of tets:   {human_format(sum(numtets), 3)}")
+print(f"Approx maximum RAM usage (GB):   {human_format(max_ram_per_tet*max(numtets)/1e6)}")
+print(f"Approx total CPU time (seconds, excludes prep):   {human_format(time_per_tet*sum(numtets))}")
