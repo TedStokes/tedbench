@@ -11,33 +11,6 @@ def line(statement):
     n = 78-len(statement)
     return "="*(n//2) +" "+ statement +" "*(1+n%2)+ "="*(n//2)
 
-# def human_format(num, sig=2):
-#     """Convert a number to human-readable format with 2 significant figures and K/M/B suffixes."""
-#     num = float(num)
-#     if num >= 1e9:
-#         return f"{f'{num/1e9:.{sig}g}'}B"
-#     elif num >= 1e6:
-#         return f"{f'{num/1e6:.{sig}g}'}M"
-#     elif num >= 1e3:
-#         return f"{f'{num/1e3:.{sig}g}'}K"
-#     else:
-#         return f"{f'{num:.{sig}g}'}"
-# def human_format(num, sig=2):
-#     if num == 0:
-#         return '0.0'
-    
-#     abs_num = abs(num)
-#     sign = '-' if num < 0 else ''
-    
-#     for threshold, suffix in [(1e9, 'B'), (1e6, 'M'), (1e3, 'K'), (1, '')]:
-#         if abs_num >= threshold:
-#             value = abs_num / threshold
-#             for f in range(sig, 0, -1):
-#                 if value >= 10**(f-1):
-#                     formatted = f'{value:.{sig-f}f}'
-#                     break
-#             return f'{sign}{formatted}{suffix}'
-#     return f'{sign}{abs_num:.2g}'
 def human_format(num, sig=2):
     return f"{num:.{sig}g}"
 
@@ -106,7 +79,7 @@ max_ram_per_tet = float(bench_info['approx max ram per tet (KB)'])
 # Evaluate the numpy expression string safely
 # Define an "eval" environment with numpy available
 safe_env = {"np": np}
-numtets = eval(bench_info['total numtets'], safe_env)
+numtets = eval(bench_info['numtets'], safe_env)
 
 if verbose:
     # === Example outputs ===
@@ -145,9 +118,60 @@ with ssh_connect(machine) as ssh:
         print(stdout.read().decode(), end="")
     print("="*80+"\n")
 
-print(f"Numbers of tets:   {[human_format(n) for n in numtets]}")
-print(f"Total number of tets:   {human_format(sum(numtets), 3)}")
-print(f"Approx maximum RAM usage (GB):   {human_format(max_ram_per_tet*max(numtets)/1e6)}")
-print(f"Approx total CPU time (seconds, excludes prep):   {human_format(time_per_tet*sum(numtets))}")
-print([x for x in np.logspace(-2, 5, 15)])
-print([human_format(x) for x in np.logspace(-2, 5, 15)])
+    print(f"Numbers of tets:   ", end="")
+    for n in numtets[:-1]:
+        print(human_format(n), end=", ")
+    print(human_format(numtets[-1]))
+    mesh_sizes = [max(2, round(s)) for s in np.cbrt(numtets/6)]
+    if verbose:
+        print(f"{mesh_sizes=}")
+    print(f"Total number of tets:   {human_format(sum(numtets), 3)}")
+    print(f"Approx maximum RAM usage (GB):   {human_format(max_ram_per_tet*max(numtets)/1e6)}")
+    print(f"Approx total CPU time (seconds, excludes prep):   {human_format(time_per_tet*sum(numtets))}")
+
+    # if input("\nConfirm benchmark should run? yes/no:   ").lower() not in ["yes", "y"]:
+    #     print(line("CANCELLING BENCHMARK"))
+    #     quit()
+
+    print("\n"+line("WRITING BASH SCRIPT"))
+    bash_script = """#!/bin/bash
+: > stdout.log
+: > stderr.log
+: > time.log
+for s in"""
+
+    for s in mesh_sizes:
+        bash_script += f" {s}"
+    bash_script += """
+do"""
+
+    for command in bench_info['prep command'].split(" && "):
+        bash_script += f"""
+    {command}"""
+        
+    bash_script += '''
+    let num=$s*$s*$s*6
+    echo $s "*" $s "*" $s "* 6 = " $num " tets"'''
+
+    for version in versions:
+        run_command = bench_info['default run command']
+        if version['custom run command'] != "":
+            run_command = version['custom run command']
+        bash_script += f'''
+    echo "{version["version label"]}"
+    /bin/time -v -o tmp_time.log \\
+      ~/{version["build location"]}/dist/bin/{run_command} \\
+      > >(tee -a "stdout.log") \\
+      2> >(tee -a "stderr.log" >&2) \\
+      | grep {bench_info["grep args"]}
+    cat tmp_time.log >> time.log
+    grep -e "Maximum resident set size" tmp_time.log
+    {bench_info["per run cleanup command"]}
+    echo ""'''
+        
+    bash_script += f'''
+    {bench_info["final cleanup command"]}
+    rm tmp_time.log
+done'''
+    
+    print(bash_script)
