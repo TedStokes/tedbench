@@ -1,14 +1,14 @@
 version label,git version,build location,cmake command,custom run command
-master,ted/master,second_nektar++/build,cmake -DNEKTAR_USE_HDF5=ON -DNEKTAR_USE_MPI=ON -DNEKTAR_USE_VTK=ON ..,
+master,ted/master,master_nektar++/build,cmake -DNEKTAR_USE_HDF5=ON -DNEKTAR_USE_MPI=ON -DNEKTAR_USE_VTK=ON ..,
 feature/geomfactors-refactor,ted/feature/geomfactors-refactor,third_nektar++/build,cmake -DNEKTAR_USE_HDF5=ON -DNEKTAR_USE_MPI=ON -DNEKTAR_USE_VTK=ON ..,
-master no-equispaced,REUSE,second_nektar++/build,,FieldConvert cube_tet_$s.xml cube_tet_$s.vtu --no-equispaced -f -v
+master no-equispaced,REUSE,master_nektar++/build,,FieldConvert cube_tet_$s.xml cube_tet_$s.vtu --no-equispaced -f -v
 feature/geomfactors-refactor no-equispaced,REUSE,third_nektar++/build,,FieldConvert cube_tet_$s.xml cube_tet_$s.vtu --no-equispaced -f -v
 ,,,,
-machine,local,,,
+machine,colo02,,,
 approx time per tet (s),1e-4,,,
 approx max ram per tet (KB),20,,,
 numtets,"np.linspace(10, 4e4, 7)",,,
-prep command,cp ~/tedbench/cube_tet_template.geo cube_tet_$s.geo && sed -i s/size_var/$s/g cube_tet_$s.geo && gmsh -3 cube_tet_$s.geo >/dev/null && rm cube_tet_$s.geo && ~/nektar++/build/dist/bin/NekMesh cube_tet_$s.msh cube_tet_$s.xml -f && rm cube_tet_$s.msh,,,
+prep command,cp ~/tedbench/cube_tet_template.geo cube_tet_$s.geo && sed -i s/size_var/$s/g cube_tet_$s.geo && gmsh -3 cube_tet_$s.geo >/dev/null && rm cube_tet_$s.geo && ~/master_nektar++/build/dist/bin/NekMesh cube_tet_$s.msh cube_tet_$s.xml -f && rm cube_tet_$s.msh,,,
 default run command,FieldConvert cube_tet_$s.xml cube_tet_$s.vtu -f -v,,,
 per run cleanup command,rm cube_tet_$s.vtu,,,
 final cleanup command,rm cube_tet_$s.xml,,,

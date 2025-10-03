@@ -127,13 +127,18 @@ with ssh_connect(machine) as ssh:
     print(f"Approx maximum RAM usage (GB):   {human_format(max_ram_per_tet*max(numtets)/1e6)}")
     print(f"Approx total CPU time (seconds, excludes prep):   {human_format(time_per_tet*sum(numtets))}")
 
-    # if input("\nConfirm benchmark should run? yes/no:   ").lower() not in ["yes", "y"]:
-    #     print(line("CANCELLING BENCHMARK"))
-    #     quit()
+    if input("\nConfirm benchmark should run? yes/no:   ").lower() not in ["yes", "y"]:
+        print(line("CANCELLING BENCHMARK"))
+        quit()
 
     print("\n"+line("WRITING BASH SCRIPT"))
     j = 10 if machine=="local" else 100
-    bash_script = """#!/bin/bash"""
+    bash_script = """#!/bin/bash
+: > build.log
+: > stdout.log
+: > stderr.log
+: > time.log
+"""
 
     for version in versions:
         if version['git version'] != "REUSE":
@@ -142,14 +147,12 @@ cd ~/{version['build location']}
 git fetch --all
 git checkout {version['git version']}
 rm CMakeCache.txt
-{version['cmake command']}
-make install -j{j}'''
+{version['cmake command']} &>> ~/tedbench/{csv_file_path[:-4]}/build.log
+make install -j{j} &>> ~/tedbench/{csv_file_path[:-4]}/build.log'''
             
     bash_script += f"""
+
 cd ~/tedbench/{csv_file_path[:-4]}
-: > stdout.log
-: > stderr.log
-: > time.log
 for s in"""
 
     for s in mesh_sizes:
@@ -170,6 +173,7 @@ do"""
         if version['custom run command'] != "":
             run_command = version['custom run command']
         bash_script += f'''
+
     echo "{version["version label"]}"
     /bin/time -v -o tmp_time.log \\
       ~/{version["build location"]}/dist/bin/{run_command} \\
@@ -182,9 +186,19 @@ do"""
     echo ""'''
         
     bash_script += f'''
+
     {bench_info["final cleanup command"]}
     rm tmp_time.log
 done'''
     
     if verbose:
         print(bash_script)
+    # Write bash script to file
+    subprocess.run(f"mkdir -p {csv_file_path[:-4]}", shell=True, capture_output=True, text=True)
+    subprocess.run(['tee', f'{csv_file_path[:-4]}/bench.sh'], input=bash_script, text=True, stdout=subprocess.DEVNULL)
+    if machine != "local":
+        stdin, stdout, stderr = ssh.exec_command(
+            f"cd tedbench && mkdir -p {csv_file_path[:-4]}")
+        with ssh.open_sftp() as sftp:
+            sftp.put(f'{csv_file_path[:-4]}/bench.sh', f'tedbench/{csv_file_path[:-4]}/bench.sh')
+            # sftp.get("/remote/path/remote.txt", "local_copy.txt")
