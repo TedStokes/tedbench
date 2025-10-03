@@ -45,18 +45,14 @@ def ssh_connect(host_alias):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("csv_file_path")
-parser.add_argument("machine", nargs="?", default="local")
 parser.add_argument("-v", "--verbose", action="store_true")
 args = parser.parse_args()
 csv_file_path = args.csv_file_path
-machine = args.machine
 verbose = args.verbose
 
 print(f"CSV relative path: {csv_file_path}")
-print(f"Server: {machine}")
 # Read the CSV without treating the blank line as NaN
 df = pd.read_csv(csv_file_path, keep_default_na=False)
-
 # Find the index of the first completely blank row (all empty strings)
 blank_row_index = df.index[df.apply(lambda row: all(cell == '' for cell in row), axis=1)].tolist()
 if blank_row_index:
@@ -72,6 +68,8 @@ bottom_df = df.iloc[split_idx + 1:]  # skip blank line
 # Only keep rows where the first column (key) is not empty
 bottom_df = bottom_df[bottom_df.iloc[:, 0] != '']
 bench_info = dict(zip(bottom_df.iloc[:, 0], bottom_df.iloc[:, 1]))
+machine = bench_info['machine']
+print(f"Machine: {machine}")
 
 # Extract doubles
 time_per_tet = float(bench_info['approx time per tet (s)'])
@@ -134,7 +132,21 @@ with ssh_connect(machine) as ssh:
     #     quit()
 
     print("\n"+line("WRITING BASH SCRIPT"))
-    bash_script = """#!/bin/bash
+    j = 10 if machine=="local" else 100
+    bash_script = """#!/bin/bash"""
+
+    for version in versions:
+        if version['git version'] != "REUSE":
+            bash_script += f'''
+cd ~/{version['build location']}
+git fetch --all
+git checkout {version['git version']}
+rm CMakeCache.txt
+{version['cmake command']}
+make install -j{j}'''
+            
+    bash_script += f"""
+cd ~/tedbench/{csv_file_path[:-4]}
 : > stdout.log
 : > stderr.log
 : > time.log
@@ -174,4 +186,5 @@ do"""
     rm tmp_time.log
 done'''
     
-    print(bash_script)
+    if verbose:
+        print(bash_script)
