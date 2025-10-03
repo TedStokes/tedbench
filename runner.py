@@ -7,6 +7,40 @@ import paramiko, os
 from paramiko.proxy import ProxyCommand
 from contextlib import contextmanager
 
+def line(statement):
+    n = 78-len(statement)
+    return "="*(n//2) +" "+ statement +" "*(1+n%2)+ "="*(n//2)
+
+# def human_format(num, sig=2):
+#     """Convert a number to human-readable format with 2 significant figures and K/M/B suffixes."""
+#     num = float(num)
+#     if num >= 1e9:
+#         return f"{f'{num/1e9:.{sig}g}'}B"
+#     elif num >= 1e6:
+#         return f"{f'{num/1e6:.{sig}g}'}M"
+#     elif num >= 1e3:
+#         return f"{f'{num/1e3:.{sig}g}'}K"
+#     else:
+#         return f"{f'{num:.{sig}g}'}"
+# def human_format(num, sig=2):
+#     if num == 0:
+#         return '0.0'
+    
+#     abs_num = abs(num)
+#     sign = '-' if num < 0 else ''
+    
+#     for threshold, suffix in [(1e9, 'B'), (1e6, 'M'), (1e3, 'K'), (1, '')]:
+#         if abs_num >= threshold:
+#             value = abs_num / threshold
+#             for f in range(sig, 0, -1):
+#                 if value >= 10**(f-1):
+#                     formatted = f'{value:.{sig-f}f}'
+#                     break
+#             return f'{sign}{formatted}{suffix}'
+#     return f'{sign}{abs_num:.2g}'
+def human_format(num, sig=2):
+    return f"{num:.{sig}g}"
+
 @contextmanager
 def ssh_connect(host_alias):
     if host_alias=="local":
@@ -33,20 +67,8 @@ def ssh_connect(host_alias):
         try:
             yield client
         finally:
-            print("CLOSING SSH CONNECTION")
+            print(line("CLOSING SSH CONNECTION"))
             client.close()
-
-def human_format(num, sig=2):
-    """Convert a number to human-readable format with 2 significant figures and K/M/B suffixes."""
-    num = float(num)
-    if num >= 1e9:
-        return f"{f'{num/1e9:.{sig}g}'}B"
-    elif num >= 1e6:
-        return f"{f'{num/1e6:.{sig}g}'}M"
-    elif num >= 1e3:
-        return f"{f'{num/1e3:.{sig}g}'}K"
-    else:
-        return f"{f'{num:.{sig}g}'}"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("csv_file_path")
@@ -115,15 +137,17 @@ if verbose:
 
 with ssh_connect(machine) as ssh:
     command = "top -b -n 1 | head -n 15"
-    print(f"\n=========================== top processes on {machine} ===========================")
+    print("\n"+line(f"top processes on {machine}"))
     if machine == "local":
         print(subprocess.run(command, shell=True, capture_output=True, text=True).stdout, end="")
     else:
         stdin, stdout, stderr = ssh.exec_command(command)
         print(stdout.read().decode(), end="")
-    print("===============================================================================\n")
+    print("="*80+"\n")
 
 print(f"Numbers of tets:   {[human_format(n) for n in numtets]}")
 print(f"Total number of tets:   {human_format(sum(numtets), 3)}")
 print(f"Approx maximum RAM usage (GB):   {human_format(max_ram_per_tet*max(numtets)/1e6)}")
 print(f"Approx total CPU time (seconds, excludes prep):   {human_format(time_per_tet*sum(numtets))}")
+print([x for x in np.logspace(-2, 5, 15)])
+print([human_format(x) for x in np.logspace(-2, 5, 15)])
