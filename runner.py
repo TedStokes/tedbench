@@ -26,9 +26,7 @@ def ssh_connect(host_alias):
         with open(os.path.expanduser("~/.ssh/config")) as f:
             cfg.parse(f)
         host_cfg = cfg.lookup(host_alias+"python")
-
         proxy = ProxyCommand(host_cfg['proxycommand']) if 'proxycommand' in host_cfg else None
-
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(
@@ -202,3 +200,17 @@ done'''
         with ssh.open_sftp() as sftp:
             sftp.put(f'{csv_file_path[:-4]}/bench.sh', f'tedbench/{csv_file_path[:-4]}/bench.sh')
             # sftp.get("/remote/path/remote.txt", "local_copy.txt")
+
+    # Execute bash script in new tmux session
+    tmux_name = f'tedbench_{csv_file_path[:-4].replace("/","_")}'
+    if machine != "local":
+        stdin, stdout, stderr = ssh.exec_command(f'tmux new-session -d -s {tmux_name}')
+        stdin, stdout, stderr = ssh.exec_command(
+            f'tmux send-keys -t {tmux_name} "cd ~/tedbench/{csv_file_path[:-4]} && bash bench.sh" C-m')
+    else:
+        subprocess.run(f'tmux new-session -d -s {tmux_name}', shell=True, capture_output=True, text=True)
+        subprocess.run(f'tmux send-keys -t {tmux_name} "cd ~/tedbench/{csv_file_path[:-4]} && bash bench.sh" C-m', shell=True, capture_output=True, text=True)
+
+
+
+
