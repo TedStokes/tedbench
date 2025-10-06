@@ -4,6 +4,7 @@ feature/geomfactors-refactor,ted/feature/geomfactors-refactor,third_nektar++/bui
 master no-equispaced,REUSE,master_nektar++/build,,FieldConvert cube_tet_$s.xml cube_tet_$s.vtu --no-equispaced -f -v
 feature/geomfactors-refactor no-equispaced,REUSE,third_nektar++/build,,FieldConvert cube_tet_$s.xml cube_tet_$s.vtu --no-equispaced -f -v
 ,,,,
+benchmark title,Equispaced Test,,,
 machine,colo02,,,
 approx time per tet (s),1e-4,,,
 approx max ram per tet (KB),20,,,
@@ -12,4 +13,4 @@ prep command,cp ~/tedbench/cube_tet_template.geo cube_tet_$s.geo && sed -i s/siz
 default run command,FieldConvert cube_tet_$s.xml cube_tet_$s.vtu -f -v,,,
 per run cleanup command,rm cube_tet_$s.vtu,,,
 final cleanup command,rm cube_tet_$s.xml,,,
-grep args,"-e ""InputXml CPU Time: "" -e ""OutputVtk CPU Time: "" -e ""ERROR:""",,,
+grep args," -e ""InputXml CPU Time: "" -e ""OutputVtk CPU Time: """,,,

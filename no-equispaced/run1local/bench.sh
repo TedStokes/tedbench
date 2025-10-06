@@ -1,6 +1,6 @@
 #!/bin/bash
 start_build=$(date +%s)
-echo "Building: $(date '+%Y-%m-%d %H:%M:%S')"
+echo "Building: $(date '+%Y-%m-%d %H:%M:%S')" | tee -a data.txt
 : > build.log
 : > stdout.log
 : > stderr.log
@@ -24,9 +24,9 @@ make install -j10 &>> ~/tedbench/no-equispaced/run1local/build.log
 
 cd ~/tedbench/no-equispaced/run1local
 start_bench=$(date +%s)
-echo "Building took $((start_bench - start_build))s"
-echo "Benchmarking: $(date '+%Y-%m-%d %H:%M:%S')"
-for s in 2 19
+echo "Building took $((start_bench - start_build))s" | tee -a data.txt
+echo "Benchmarking: $(date '+%Y-%m-%d %H:%M:%S')" | tee -a data.txt
+for s in 2 10 13 15 16 18 19
 do
     cp ~/tedbench/cube_tet_template.geo cube_tet_$s.geo
     sed -i s/size_var/$s/g cube_tet_$s.geo
@@ -85,5 +85,5 @@ do
     rm tmp_time.log
 done
 done_bench=$(date +%s)
-echo "Benchmarking took $((done_bench - start_bench))s"
-echo "Done: $(date '+%Y-%m-%d %H:%M:%S')"
+echo "Benchmarking took $((done_bench - start_bench))s" | tee -a data.txt
+echo "Done: $(date '+%Y-%m-%d %H:%M:%S')" | tee -a data.txt

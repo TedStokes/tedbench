@@ -43,8 +43,8 @@ def ssh_connect(host_alias):
             client.close()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("csv_file_path")
-parser.add_argument("-v", "--verbose", action="store_true")
+parser.add_argument("csv_file_path", help="Path to CSV file")
+parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
 args = parser.parse_args()
 csv_file_path = args.csv_file_path
 verbose = args.verbose
@@ -138,13 +138,13 @@ with ssh_connect(machine) as ssh:
     print("\n"+line("WRITING BASH SCRIPT"))
     j = 10 if machine=="local" else 100
     bash_script = """#!/bin/bash
-start_build=$(date +%s)
-echo "Building: $(date '+%Y-%m-%d %H:%M:%S')"
 : > build.log
 : > stdout.log
 : > stderr.log
 : > time.log
 : > data.txt
+start_build=$(date +%s)
+echo "Building: $(date '+%Y-%m-%d %H:%M:%S')" | tee -a data.txt
 """
 
     for version in versions:
@@ -162,8 +162,8 @@ make install -j{j} &>> ~/tedbench/{csv_file_path[:-4]}/build.log'''
 
 cd ~/tedbench/{csv_file_path[:-4]}
 start_bench=$(date +%s)
-echo "Building took $((start_bench - start_build))s"
-echo "Benchmarking: $(date '+%Y-%m-%d %H:%M:%S')"
+echo "Building took $((start_bench - start_build))s" | tee -a data.txt
+echo "Benchmarking: $(date '+%Y-%m-%d %H:%M:%S')" | tee -a data.txt
 for s in"""
 
     for s in mesh_sizes:
@@ -190,7 +190,7 @@ do"""
       ~/{version["build location"]}/dist/bin/{run_command} \\
       > >(tee -a "stdout.log") \\
       2> >(tee -a "stderr.log" >&2) \\
-      | grep {bench_info["grep args"]} | tee -a data.txt
+      | grep{bench_info["grep args"]} -e "ERROR:" | tee -a data.txt
     cat tmp_time.log >> time.log
     grep -e "Maximum resident set size" tmp_time.log | tee -a data.txt
     {bench_info["per run cleanup command"]}
@@ -202,8 +202,8 @@ do"""
     rm tmp_time.log
 done
 done_bench=$(date +%s)
-echo "Benchmarking took $((done_bench - start_bench))s"
-echo "Done: $(date '+%Y-%m-%d %H:%M:%S')"'''
+echo "Benchmarking took $((done_bench - start_bench))s" | tee -a data.txt
+echo "Done: $(date '+%Y-%m-%d %H:%M:%S')" | tee -a data.txt'''
     
     if verbose:
         print(bash_script)
@@ -215,7 +215,6 @@ echo "Done: $(date '+%Y-%m-%d %H:%M:%S')"'''
             f"cd tedbench && mkdir -p {csv_file_path[:-4]}")
         with ssh.open_sftp() as sftp:
             sftp.put(f'{csv_file_path[:-4]}/bench.sh', f'tedbench/{csv_file_path[:-4]}/bench.sh')
-            # sftp.get("/remote/path/remote.txt", "local_copy.txt")
 
     # Execute bash script in new tmux session
     print(line("RUNNING BASH SCRIPT"))

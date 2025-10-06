@@ -1,0 +1,151 @@
+Building took 19s
+Benchmarking: 2025-10-06 12:39:27
+2 * 2 * 2 * 6 =  48  tets
+master
+InputXml CPU Time: 0.0022327s
+OutputVtk CPU Time: 0.00945941s
+	Maximum resident set size (kbytes): 51200
+
+feature/geomfactors-refactor
+InputXml CPU Time: 0.00196994s
+OutputVtk CPU Time: 0.00967882s
+	Maximum resident set size (kbytes): 51200
+
+master no-equispaced
+InputXml CPU Time: 0.00224906s
+OutputVtk CPU Time: 0.00950486s
+	Maximum resident set size (kbytes): 51200
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 0.00197367s
+OutputVtk CPU Time: 0.0099015s
+	Maximum resident set size (kbytes): 51200
+
+10 * 10 * 10 * 6 =  6000  tets
+master
+InputXml CPU Time: 0.10751s
+OutputVtk CPU Time: 0.52021s
+	Maximum resident set size (kbytes): 149724
+
+feature/geomfactors-refactor
+InputXml CPU Time: 0.0750398s
+OutputVtk CPU Time: 0.640128s
+	Maximum resident set size (kbytes): 156892
+
+master no-equispaced
+InputXml CPU Time: 0.107083s
+OutputVtk CPU Time: 0.579781s
+	Maximum resident set size (kbytes): 145408
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 0.0735483s
+OutputVtk CPU Time: 0.631393s
+	Maximum resident set size (kbytes): 139264
+
+13 * 13 * 13 * 6 =  13182  tets
+master
+InputXml CPU Time: 0.242209s
+OutputVtk CPU Time: 1.12488s
+	Maximum resident set size (kbytes): 295084
+
+feature/geomfactors-refactor
+InputXml CPU Time: 0.171483s
+OutputVtk CPU Time: 1.39963s
+	Maximum resident set size (kbytes): 289572
+
+master no-equispaced
+InputXml CPU Time: 0.240153s
+OutputVtk CPU Time: 1.24622s
+	Maximum resident set size (kbytes): 263808
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 0.170217s
+OutputVtk CPU Time: 1.38149s
+	Maximum resident set size (kbytes): 251904
+
+15 * 15 * 15 * 6 =  20250  tets
+master
+InputXml CPU Time: 0.35527s
+OutputVtk CPU Time: 1.73895s
+	Maximum resident set size (kbytes): 367020
+
+feature/geomfactors-refactor
+InputXml CPU Time: 0.261401s
+OutputVtk CPU Time: 2.15079s
+	Maximum resident set size (kbytes): 430556
+
+master no-equispaced
+InputXml CPU Time: 0.361584s
+OutputVtk CPU Time: 1.95238s
+	Maximum resident set size (kbytes): 358400
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 0.267006s
+OutputVtk CPU Time: 2.13495s
+	Maximum resident set size (kbytes): 370688
+
+16 * 16 * 16 * 6 =  24576  tets
+master
+InputXml CPU Time: 0.45079s
+OutputVtk CPU Time: 2.27677s
+	Maximum resident set size (kbytes): 450324
+
+feature/geomfactors-refactor
+InputXml CPU Time: 0.317038s
+OutputVtk CPU Time: 2.83299s
+	Maximum resident set size (kbytes): 480684
+
+master no-equispaced
+InputXml CPU Time: 0.447046s
+OutputVtk CPU Time: 2.39563s
+	Maximum resident set size (kbytes): 438272
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 0.313215s
+OutputVtk CPU Time: 2.63259s
+	Maximum resident set size (kbytes): 417792
+
+18 * 18 * 18 * 6 =  34992  tets
+master
+InputXml CPU Time: 0.648338s
+OutputVtk CPU Time: 3.00019s
+	Maximum resident set size (kbytes): 684452
+
+feature/geomfactors-refactor
+InputXml CPU Time: 0.473284s
+OutputVtk CPU Time: 3.7511s 
+	Maximum resident set size (kbytes): 751352
+
+master no-equispaced
+InputXml CPU Time: 0.647388s
+OutputVtk CPU Time: 3.35216s
+	Maximum resident set size (kbytes): 610304
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 0.483296s
+OutputVtk CPU Time: 3.70794s
+	Maximum resident set size (kbytes): 634880
+
+19 * 19 * 19 * 6 =  41154  tets
+master
+InputXml CPU Time: 0.740679s
+OutputVtk CPU Time: 3.5258s 
+	Maximum resident set size (kbytes): 690528
+
+feature/geomfactors-refactor
+InputXml CPU Time: 0.55465s
+OutputVtk CPU Time: 4.37744s
+	Maximum resident set size (kbytes): 815160
+
+master no-equispaced
+InputXml CPU Time: 0.73487s
+OutputVtk CPU Time: 3.89924s
+	Maximum resident set size (kbytes): 661504
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 0.545891s
+OutputVtk CPU Time: 4.3409s 
+	Maximum resident set size (kbytes): 688128
+
+Benchmarking took 89s
+Done: 2025-10-06 12:40:56

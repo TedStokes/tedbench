@@ -3,3 +3,22 @@
 2025-10-06 11:38:34 - running no-equispaced/run1local
 2025-10-06 11:41:44 - running no-equispaced/run1local
 2025-10-06 11:46:57 - running no-equispaced/run1local
+2025-10-06 12:17:19 - graphing no-equispaced/run1local
+2025-10-06 12:17:31 - graphing no-equispaced/run1local
+2025-10-06 12:18:13 - graphing no-equispaced/run1local
+2025-10-06 12:18:40 - graphing no-equispaced/run1local
+2025-10-06 12:19:07 - graphing no-equispaced/run1local
+2025-10-06 12:26:32 - running no-equispaced/run1colo02
+2025-10-06 12:27:43 - graphing no-equispaced/run1local
+2025-10-06 12:27:59 - graphing no-equispaced/run1local
+2025-10-06 12:28:26 - running no-equispaced/run1local
+2025-10-06 12:29:25 - graphing no-equispaced/run1colo02
+2025-10-06 12:35:25 - graphing no-equispaced/run1colo02
+2025-10-06 12:35:52 - graphing no-equispaced/run1local
+2025-10-06 12:38:32 - running no-equispaced/run1local
+2025-10-06 12:39:08 - running no-equispaced/run1colo02
+2025-10-06 12:40:30 - graphing no-equispaced/run1local
+2025-10-06 12:41:07 - graphing no-equispaced/run1colo02
+2025-10-06 12:43:56 - running no-equispaced/run1local2025-10-06 17:02:36 - graphing no-equispaced/run1local
+2025-10-06 17:06:31 - graphing no-equispaced/run1local
+2025-10-06 17:06:50 - graphing no-equispaced/run1colo02
