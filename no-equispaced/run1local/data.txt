@@ -1,0 +1,42 @@
+2 * 2 * 2 * 6 =  48  tets
+master
+InputXml CPU Time: 0.00410851s
+OutputVtk CPU Time: 0.0124424s
+	Maximum resident set size (kbytes): 62316
+
+feature/geomfactors-refactor
+InputXml CPU Time: 0.00280057s
+OutputVtk CPU Time: 0.00950353s
+	Maximum resident set size (kbytes): 62416
+
+master no-equispaced
+InputXml CPU Time: 0.00351289s
+OutputVtk CPU Time: 0.0108971s
+	Maximum resident set size (kbytes): 62248
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 0.00307518s
+OutputVtk CPU Time: 0.0158811s
+	Maximum resident set size (kbytes): 61868
+
+19 * 19 * 19 * 6 =  41154  tets
+master
+InputXml CPU Time: 0.617622s
+OutputVtk CPU Time: 2.44511s
+	Maximum resident set size (kbytes): 705116
+
+feature/geomfactors-refactor
+InputXml CPU Time: 0.438187s
+OutputVtk CPU Time: 3.15986s
+	Maximum resident set size (kbytes): 826820
+
+master no-equispaced
+InputXml CPU Time: 0.566425s
+OutputVtk CPU Time: 2.78453s
+	Maximum resident set size (kbytes): 672092
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 0.374942s
+OutputVtk CPU Time: 3.13803s
+	Maximum resident set size (kbytes): 701256
+

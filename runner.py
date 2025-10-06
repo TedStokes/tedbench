@@ -6,6 +6,7 @@ import subprocess
 import paramiko, os
 from paramiko.proxy import ProxyCommand
 from contextlib import contextmanager
+from datetime import datetime
 
 def line(statement):
     n = 78-len(statement)
@@ -123,34 +124,46 @@ with ssh_connect(machine) as ssh:
         print(f"{mesh_sizes=}")
     print(f"Total number of tets:   {human_format(sum(numtets), 3)}")
     print(f"Approx maximum RAM usage (GB):   {human_format(max_ram_per_tet*max(numtets)/1e6)}")
-    print(f"Approx total CPU time (seconds, excludes prep):   {human_format(time_per_tet*sum(numtets))}")
+    print(f"Approx total CPU time (seconds, excludes prep):   {human_format(time_per_tet*sum(numtets)*len(versions))}")
 
     if input("\nConfirm benchmark should run? yes/no:   ").lower() not in ["yes", "y"]:
         print(line("CANCELLING BENCHMARK"))
         quit()
 
+    # Write running time to history
+    with open("history.txt", "a") as file:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        file.write(f"{now} - running {csv_file_path[:-4]}\n")
+
     print("\n"+line("WRITING BASH SCRIPT"))
     j = 10 if machine=="local" else 100
     bash_script = """#!/bin/bash
+start_build=$(date +%s)
+echo "Building: $(date '+%Y-%m-%d %H:%M:%S')"
 : > build.log
 : > stdout.log
 : > stderr.log
 : > time.log
+: > data.txt
 """
 
     for version in versions:
         if version['git version'] != "REUSE":
             bash_script += f'''
 cd ~/{version['build location']}
-git fetch --all
-git checkout {version['git version']}
-rm CMakeCache.txt
+git fetch --all &>> ~/tedbench/{csv_file_path[:-4]}/build.log
+echo "Checking out {version['git version']}..." &>> ~/tedbench/{csv_file_path[:-4]}/build.log
+git checkout {version['git version']} &>> ~/tedbench/{csv_file_path[:-4]}/build.log
+rm CMakeCache.txt &>> ~/tedbench/{csv_file_path[:-4]}/build.log
 {version['cmake command']} &>> ~/tedbench/{csv_file_path[:-4]}/build.log
 make install -j{j} &>> ~/tedbench/{csv_file_path[:-4]}/build.log'''
             
     bash_script += f"""
 
 cd ~/tedbench/{csv_file_path[:-4]}
+start_bench=$(date +%s)
+echo "Building took $((start_bench - start_build))s"
+echo "Benchmarking: $(date '+%Y-%m-%d %H:%M:%S')"
 for s in"""
 
     for s in mesh_sizes:
@@ -164,7 +177,7 @@ do"""
         
     bash_script += '''
     let num=$s*$s*$s*6
-    echo $s "*" $s "*" $s "* 6 = " $num " tets"'''
+    echo $s "*" $s "*" $s "* 6 = " $num " tets" | tee -a data.txt'''
 
     for version in versions:
         run_command = bench_info['default run command']
@@ -172,22 +185,25 @@ do"""
             run_command = version['custom run command']
         bash_script += f'''
 
-    echo "{version["version label"]}"
+    echo "{version["version label"]}" | tee -a data.txt
     /bin/time -v -o tmp_time.log \\
       ~/{version["build location"]}/dist/bin/{run_command} \\
       > >(tee -a "stdout.log") \\
       2> >(tee -a "stderr.log" >&2) \\
-      | grep {bench_info["grep args"]}
+      | grep {bench_info["grep args"]} | tee -a data.txt
     cat tmp_time.log >> time.log
-    grep -e "Maximum resident set size" tmp_time.log
+    grep -e "Maximum resident set size" tmp_time.log | tee -a data.txt
     {bench_info["per run cleanup command"]}
-    echo ""'''
+    echo "" | tee -a data.txt'''
         
     bash_script += f'''
 
     {bench_info["final cleanup command"]}
     rm tmp_time.log
-done'''
+done
+done_bench=$(date +%s)
+echo "Benchmarking took $((done_bench - start_bench))s"
+echo "Done: $(date '+%Y-%m-%d %H:%M:%S')"'''
     
     if verbose:
         print(bash_script)
@@ -202,12 +218,15 @@ done'''
             # sftp.get("/remote/path/remote.txt", "local_copy.txt")
 
     # Execute bash script in new tmux session
+    print(line("RUNNING BASH SCRIPT"))
     tmux_name = f'tedbench_{csv_file_path[:-4].replace("/","_")}'
     if machine != "local":
+        stdin, stdout, stderr = ssh.exec_command(f'tmux kill-session -t {tmux_name} 2>/dev/null')
         stdin, stdout, stderr = ssh.exec_command(f'tmux new-session -d -s {tmux_name}')
         stdin, stdout, stderr = ssh.exec_command(
             f'tmux send-keys -t {tmux_name} "cd ~/tedbench/{csv_file_path[:-4]} && bash bench.sh" C-m')
     else:
+        subprocess.run(f'tmux kill-session -t {tmux_name} 2>/dev/null', shell=True, capture_output=True, text=True)
         subprocess.run(f'tmux new-session -d -s {tmux_name}', shell=True, capture_output=True, text=True)
         subprocess.run(f'tmux send-keys -t {tmux_name} "cd ~/tedbench/{csv_file_path[:-4]} && bash bench.sh" C-m', shell=True, capture_output=True, text=True)
 
