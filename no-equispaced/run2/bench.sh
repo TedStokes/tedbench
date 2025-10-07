@@ -8,25 +8,25 @@ start_build=$(date +%s)
 echo "Building: $(date '+%Y-%m-%d %H:%M:%S')" | tee -a data.txt
 
 cd ~/master_nektar++/build
-git fetch --all &>> ~/tedbench/no-equispaced/run1local/build.log
-echo "Checking out ted/master..." &>> ~/tedbench/no-equispaced/run1local/build.log
-git checkout ted/master &>> ~/tedbench/no-equispaced/run1local/build.log
-rm CMakeCache.txt &>> ~/tedbench/no-equispaced/run1local/build.log
-cmake -DNEKTAR_USE_HDF5=ON -DNEKTAR_USE_MPI=ON -DNEKTAR_USE_VTK=ON .. &>> ~/tedbench/no-equispaced/run1local/build.log
-make install -j10 &>> ~/tedbench/no-equispaced/run1local/build.log
+git fetch --all &>> ~/tedbench/no-equispaced/run2/build.log
+echo "Checking out ted/master..." &>> ~/tedbench/no-equispaced/run2/build.log
+git checkout ted/master &>> ~/tedbench/no-equispaced/run2/build.log
+rm CMakeCache.txt &>> ~/tedbench/no-equispaced/run2/build.log
+cmake -DNEKTAR_USE_HDF5=ON -DNEKTAR_USE_MPI=ON -DNEKTAR_USE_VTK=ON .. &>> ~/tedbench/no-equispaced/run2/build.log
+make install -j100 &>> ~/tedbench/no-equispaced/run2/build.log
 cd ~/third_nektar++/build
-git fetch --all &>> ~/tedbench/no-equispaced/run1local/build.log
-echo "Checking out ted/feature/geomfactors-refactor..." &>> ~/tedbench/no-equispaced/run1local/build.log
-git checkout ted/feature/geomfactors-refactor &>> ~/tedbench/no-equispaced/run1local/build.log
-rm CMakeCache.txt &>> ~/tedbench/no-equispaced/run1local/build.log
-cmake -DNEKTAR_USE_HDF5=ON -DNEKTAR_USE_MPI=ON -DNEKTAR_USE_VTK=ON .. &>> ~/tedbench/no-equispaced/run1local/build.log
-make install -j10 &>> ~/tedbench/no-equispaced/run1local/build.log
+git fetch --all &>> ~/tedbench/no-equispaced/run2/build.log
+echo "Checking out ted/feature/geomfactors-refactor..." &>> ~/tedbench/no-equispaced/run2/build.log
+git checkout ted/feature/geomfactors-refactor &>> ~/tedbench/no-equispaced/run2/build.log
+rm CMakeCache.txt &>> ~/tedbench/no-equispaced/run2/build.log
+cmake -DNEKTAR_USE_HDF5=ON -DNEKTAR_USE_MPI=ON -DNEKTAR_USE_VTK=ON .. &>> ~/tedbench/no-equispaced/run2/build.log
+make install -j100 &>> ~/tedbench/no-equispaced/run2/build.log
 
-cd ~/tedbench/no-equispaced/run1local
+cd ~/tedbench/no-equispaced/run2
 start_bench=$(date +%s)
 echo "Building took $((start_bench - start_build))s" | tee -a data.txt
 echo "Benchmarking: $(date '+%Y-%m-%d %H:%M:%S')" | tee -a data.txt
-for s in 2 10 13 15 16 18 19
+for s in 19 32 39 44 48 52 55
 do
     cp ~/tedbench/cube_tet_template.geo cube_tet_$s.geo
     sed -i s/size_var/$s/g cube_tet_$s.geo
@@ -87,4 +87,3 @@ done
 done_bench=$(date +%s)
 echo "Benchmarking took $((done_bench - start_bench))s" | tee -a data.txt
 echo "Done: $(date '+%Y-%m-%d %H:%M:%S')" | tee -a data.txt
-python3 ~/tedbench/send_email.py ~/tedbench/no-equispaced/run1local/data.txt

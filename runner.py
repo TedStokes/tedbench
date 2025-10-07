@@ -45,6 +45,7 @@ def ssh_connect(host_alias):
 parser = argparse.ArgumentParser()
 parser.add_argument("csv_file_path", help="Path to CSV file")
 parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+parser.add_argument("-e", "--email", action="store_true", help="Enable completion email")
 args = parser.parse_args()
 csv_file_path = args.csv_file_path
 verbose = args.verbose
@@ -124,7 +125,7 @@ with ssh_connect(machine) as ssh:
         print(f"{mesh_sizes=}")
     print(f"Total number of tets:   {human_format(sum(numtets), 3)}")
     print(f"Approx maximum RAM usage (GB):   {human_format(max_ram_per_tet*max(numtets)/1e6)}")
-    print(f"Approx total CPU time (seconds, excludes prep):   {human_format(time_per_tet*sum(numtets)*len(versions))}")
+    print(f"Approx total CPU time (seconds):   {human_format(time_per_tet*sum(numtets)*len(versions))}")
 
     if input("\nConfirm benchmark should run? yes/no:   ").lower() not in ["yes", "y"]:
         print(line("CANCELLING BENCHMARK"))
@@ -204,6 +205,10 @@ done
 done_bench=$(date +%s)
 echo "Benchmarking took $((done_bench - start_bench))s" | tee -a data.txt
 echo "Done: $(date '+%Y-%m-%d %H:%M:%S')" | tee -a data.txt'''
+    
+    if args.email:
+        bash_script += f'''
+python3 ~/tedbench/send_email.py ~/tedbench/{csv_file_path[:-4]}/data.txt'''
     
     if verbose:
         print(bash_script)

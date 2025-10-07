@@ -22,3 +22,6 @@
 2025-10-06 12:43:56 - running no-equispaced/run1local2025-10-06 17:02:36 - graphing no-equispaced/run1local
 2025-10-06 17:06:31 - graphing no-equispaced/run1local
 2025-10-06 17:06:50 - graphing no-equispaced/run1colo02
+2025-10-07 11:43:44 - running no-equispaced/run2
+2025-10-07 11:58:32 - running no-equispaced/run1local
+2025-10-07 12:03:19 - graphing no-equispaced/run1local

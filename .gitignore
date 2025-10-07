@@ -1,2 +1,4 @@
 *.log
 *.png
+send_email.py
+# send_email.py not uploaded to github because it contains a password
