@@ -1,14 +1,14 @@
 version label,git version,build location,cmake command,custom run command
 master,ted/master,master_nektar++/build,cmake -DNEKTAR_USE_HDF5=ON -DNEKTAR_USE_MPI=ON -DNEKTAR_USE_VTK=ON ..,
-feature/geomfactors-refactor,ted/feature/geomfactors-refactor,third_nektar++/build,cmake -DNEKTAR_USE_HDF5=ON -DNEKTAR_USE_MPI=ON -DNEKTAR_USE_VTK=ON ..,
-master no-equispaced,REUSE,master_nektar++/build,,FieldConvert cube_tet_$s.xml cube_tet_$s.vtu --no-equispaced -f -v
-feature/geomfactors-refactor no-equispaced,REUSE,third_nektar++/build,,FieldConvert cube_tet_$s.xml cube_tet_$s.vtu --no-equispaced -f -v
+refactor with ConvertExpToEquispaced & m_keyTgt,19b09696a3d8f3f69945a118988e4bdecb827fd0,nektar++/build,cmake -DNEKTAR_USE_HDF5=ON -DNEKTAR_USE_MPI=ON -DNEKTAR_USE_VTK=ON ..,
+refactor with SetUpExp(equispaced=true) & m_keyTgt,7b79b6b9e0ac3b411f5a03c7d0c4efa0babf1f81,second_nektar++/build,cmake -DNEKTAR_USE_HDF5=ON -DNEKTAR_USE_MPI=ON -DNEKTAR_USE_VTK=ON ..,
+refactor with SetUpExp(equispaced=true),ted/feature/geomfactors-refactor,third_nektar++/build,cmake -DNEKTAR_USE_HDF5=ON -DNEKTAR_USE_MPI=ON -DNEKTAR_USE_VTK=ON ..,
 ,,,,
-benchmark title,Equispaced Test,,,
+benchmark title,GeomFactors FieldConvert run 3,,,
 machine,colo02,,,
 approx time per tet (s),2e-4,,,
 approx max ram per tet (KB),25,,,
-numtets,"np.linspace(4e4, 1e6, 7)",,,
+numtets,"np.linspace(1e4, 1e6, 7)",,,
 prep command,cp ~/tedbench/cube_tet_template.geo cube_tet_$s.geo && sed -i s/size_var/$s/g cube_tet_$s.geo && gmsh -3 cube_tet_$s.geo >/dev/null && rm cube_tet_$s.geo && ~/master_nektar++/build/dist/bin/NekMesh cube_tet_$s.msh cube_tet_$s.xml -f && rm cube_tet_$s.msh,,,
 default run command,FieldConvert cube_tet_$s.xml cube_tet_$s.vtu -f -v,,,
 per run cleanup command,rm cube_tet_$s.vtu,,,

@@ -1,6 +1,6 @@
 // Tetrahedral mesh of a cube
 //
-// Run: gmsh -3 -order n CubeTet.geo
+// Run: gmsh -3 cube_tet_$s.geo
 
 Point(1) = {0,0,0,0.1};
 l[] = Extrude {1,0,0} {
@@ -19,3 +19,4 @@ Physical Surface(3) = {18};
 Physical Surface(4) = {22};
 Physical Surface(5) = {26};
 Physical Surface(6) = {27};
+// Mesh.ElementOrder = 8;

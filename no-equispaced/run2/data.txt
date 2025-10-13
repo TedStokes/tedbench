@@ -1,0 +1,152 @@
+Building: 2025-10-07 11:43:44
+Building took 18s
+Benchmarking: 2025-10-07 11:44:02
+19 * 19 * 19 * 6 =  41154  tets
+master
+InputXml CPU Time: 0.752293s
+OutputVtk CPU Time: 3.51494s
+	Maximum resident set size (kbytes): 691856
+
+feature/geomfactors-refactor
+InputXml CPU Time: 0.546677s
+OutputVtk CPU Time: 4.38033s
+	Maximum resident set size (kbytes): 813260
+
+master no-equispaced
+InputXml CPU Time: 0.750985s
+OutputVtk CPU Time: 3.88057s
+	Maximum resident set size (kbytes): 661504
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 0.560465s
+OutputVtk CPU Time: 4.30163s
+	Maximum resident set size (kbytes): 688128
+
+32 * 32 * 32 * 6 =  196608  tets
+master
+InputXml CPU Time: 4.05249s
+OutputVtk CPU Time: 17.5888s
+	Maximum resident set size (kbytes): 3269920
+
+feature/geomfactors-refactor
+InputXml CPU Time: 2.89912s
+OutputVtk CPU Time: 22.0784s
+	Maximum resident set size (kbytes): 3297884
+
+master no-equispaced
+InputXml CPU Time: 4.09787s
+OutputVtk CPU Time: 18.9214s
+	Maximum resident set size (kbytes): 3129360
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 2.89879s
+OutputVtk CPU Time: 20.9049s
+	Maximum resident set size (kbytes): 2970060
+
+39 * 39 * 39 * 6 =  355914  tets
+master
+InputXml CPU Time: 7.50717s
+OutputVtk CPU Time: 28.8628s
+	Maximum resident set size (kbytes): 6080472
+
+feature/geomfactors-refactor
+InputXml CPU Time: 5.38013s
+OutputVtk CPU Time: 36.5335s
+	Maximum resident set size (kbytes): 6106988
+
+master no-equispaced
+InputXml CPU Time: 7.59451s
+OutputVtk CPU Time: 32.7996s
+	Maximum resident set size (kbytes): 5800800
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 5.37265s
+OutputVtk CPU Time: 36.4751s
+	Maximum resident set size (kbytes): 5503724
+
+44 * 44 * 44 * 6 =  511104  tets
+master
+InputXml CPU Time: 10.4938s
+OutputVtk CPU Time: 42.5306s
+	Maximum resident set size (kbytes): 7739728
+
+feature/geomfactors-refactor
+InputXml CPU Time: 7.77662s
+OutputVtk CPU Time: 53.2933s
+	Maximum resident set size (kbytes): 8000424
+
+master no-equispaced
+InputXml CPU Time: 10.6522s
+OutputVtk CPU Time: 47.7517s
+	Maximum resident set size (kbytes): 7602020
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 7.82278s
+OutputVtk CPU Time: 53.1557s
+	Maximum resident set size (kbytes): 7427188
+
+48 * 48 * 48 * 6 =  663552  tets
+master
+InputXml CPU Time: 13.3832s
+OutputVtk CPU Time: 57.2172s
+	Maximum resident set size (kbytes): 10374092
+
+feature/geomfactors-refactor
+InputXml CPU Time: 10.1293s
+OutputVtk CPU Time: 71.4585s
+	Maximum resident set size (kbytes): 11705452
+
+master no-equispaced
+InputXml CPU Time: 13.481s 
+OutputVtk CPU Time: 63.1929s
+	Maximum resident set size (kbytes): 9775232
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 10.5516s
+OutputVtk CPU Time: 69.9584s
+	Maximum resident set size (kbytes): 10244472
+
+52 * 52 * 52 * 6 =  843648  tets
+master
+InputXml CPU Time: 17.2458s
+OutputVtk CPU Time: 67.5222s
+	Maximum resident set size (kbytes): 13235760
+
+feature/geomfactors-refactor
+InputXml CPU Time: 14.0203s
+OutputVtk CPU Time: 87.6006s
+	Maximum resident set size (kbytes): 13341748
+
+master no-equispaced
+InputXml CPU Time: 17.2345s
+OutputVtk CPU Time: 78.4539s
+	Maximum resident set size (kbytes): 12775028
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 14.0234s
+OutputVtk CPU Time: 87.335s 
+	Maximum resident set size (kbytes): 12181244
+
+55 * 55 * 55 * 6 =  998250  tets
+master
+InputXml CPU Time: 20.6335s
+OutputVtk CPU Time: 80.061s 
+	Maximum resident set size (kbytes): 15251160
+
+feature/geomfactors-refactor
+InputXml CPU Time: 14.9578s
+OutputVtk CPU Time: 101.071s
+	Maximum resident set size (kbytes): 15656892
+
+master no-equispaced
+InputXml CPU Time: 20.3967s
+OutputVtk CPU Time: 91.7365s
+	Maximum resident set size (kbytes): 14911744
+
+feature/geomfactors-refactor no-equispaced
+InputXml CPU Time: 16.7569s
+OutputVtk CPU Time: 102.669s
+	Maximum resident set size (kbytes): 14537536
+
+Benchmarking took 1857s
+Done: 2025-10-07 12:14:59
